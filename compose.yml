@@ -1,0 +1,284 @@
+services:
+
+######## MEDIA PLAYERS ########
+
+  plex: # media server for streaming movies and tv
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    networks:
+      - arrstack
+    ports:
+      - 32400:32400/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+      - VERSION=docker
+      - PLEX_CLAIM=${PLEX_CLAIM}
+    volumes:
+      - ${APPDATA_FOLDER}/plex:/config
+      - ${MEDIA_SHARE}:/media
+      - /dev/shm:/transcode  # /dev/shm is used for transcoding in RAM. if your server has low RAM,set a limit or change to a path on a (solid state) disk
+    restart: unless-stopped
+
+# uncomment below to enable jellyfin media server
+
+  # jellyfin: # open-source media server alternative to plex
+  #   image: lscr.io/linuxserver/jellyfin:latest
+  #   container_name: jellyfin
+  #   networks:
+  #     - arrstack
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - UMASK=${UMASK}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ${APPDATA_FOLDER}/jellyfin:/config
+  #     - ${MEDIA_SHARE}/television:/media/tvshows
+  #     - ${MEDIA_SHARE}/movies:/media/movies
+  #     - ${MEDIA_SHARE}/anime:/media/anime
+  #   ports:
+  #     - ${JELLYFIN_WEBUI_PORT}:8096
+  #   restart: unless-stopped
+
+######## DOWNLOADERS ########
+
+  sabnzbd: # usenet downloader - more info here: https://www.reddit.com/r/usenet/comments/18q7r0f/usenet_starter_guide/ and in "starter guide.txt" file
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_FOLDER}/sabnzbd:/config
+      - ${MEDIA_SHARE}:/media
+    networks:
+      - arrstack
+    ports:
+      - ${SABNZBD_WEBUI_PORT}:8080
+    restart: always
+
+# QBittorrent with ProtonVPN - uncomment to enable (requires protonvpn account and service below. Make sure to set OPENVPN_USER and OPENVPN_PASSWORD in .env)
+
+  # qbittorrent: # torrent client
+  #   image: lscr.io/linuxserver/qbittorrent:latest
+  #   container_name: qbittorrent
+  #   depends_on:
+  #     - protonvpn
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - UMASK=${UMASK}
+  #     - TZ=${TZ}
+  #     - WEBUI_PORT=${QBITTORRENT_WEBUI_PORT}
+  #   volumes:
+  #     - ${APPDATA_FOLDER}/qbittorrent-vpn:/config
+  #     - ${MEDIA_SHARE}:/media
+  #   network_mode: "service:protonvpn"
+  #   restart: unless-stopped
+
+######## *ARR APPS ########
+
+  prowlarr: # indexer manager for *arr apps
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_FOLDER}/prowlarr:/config
+      - ${MEDIA_SHARE}:/media
+    networks:
+      - arrstack
+    ports:
+      - ${PROWLARR_WEBUI_PORT}:9696
+    restart: always
+
+  radarr: # movie manager
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - ${MEDIA_SHARE}:/media
+      - ${APPDATA_FOLDER}/radarr:/config
+    networks:
+      - arrstack
+    ports:
+      - ${RADARR_WEBUI_PORT}:7878
+    restart: always
+
+  sonarr: # tv show manager
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - ${MEDIA_SHARE}:/media
+      - ${APPDATA_FOLDER}/sonarr:/config
+    networks:
+      - arrstack
+    ports:
+      - ${SONARR_WEBUI_PORT}:8989
+    restart: always
+
+# uncomment below to enable separate sonarr instance for anime 
+
+  # sonarr-anime: # separate sonarr instance for anime
+  #   image: lscr.io/linuxserver/sonarr:latest
+  #   container_name: sonarr-anime
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - UMASK=${UMASK}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ${MEDIA_SHARE}:/media
+  #     - ${APPDATA_FOLDER}/sonarr-anime:/config
+  #   networks:
+  #     - arrstack
+  #   ports:
+  #     - ${SONARR_ANIME_WEBUI_PORT}:8989
+  #   restart: always
+
+  bazarr: # subtitle downloader and manager
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_FOLDER}/bazarr:/config
+      - ${MEDIA_SHARE}:/media
+    networks:
+      - arrstack
+    ports:
+      - ${BAZARR_WEBUI_PORT}:6767
+    restart: always
+
+######## MONITORS AND UTILITIES ########
+
+# uncomment below to enable cloudflared tunnel for remote access without port forwarding
+
+  # cloudflaretunnel: # secure tunnel for remote access without port forwarding
+  #   image: cloudflare/cloudflared:latest
+  #   container_name: cloudflaretunnel
+  #   command: "tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}"
+  #   networks:
+  #     - arrstack
+  #   restart: always
+
+
+# uncomment below to enable notifiarr for *arr app notifications. can be used to sync trash guides for custom formats
+
+  # notifiarr: # discord/notification integration for *arr apps
+  #   image: golift/notifiarr:latest
+  #   container_name: notifiarr
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - UMASK=${UMASK}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ${APPDATA_FOLDER}/notifiarr:/config
+  #     - /var/run/utmp:/var/run/utmp
+  #   networks:
+  #     - arrstack
+  #   ports:
+  #     - ${NOTIFIARR_WEBUI_PORT}:5454
+  #   restart: always
+
+  overseerr: # media request manager for plex
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_FOLDER}/overseerr:/config
+      - ${MEDIA_SHARE}:/media
+    networks:
+      - arrstack
+    ports:
+      - ${OVERSEERR_WEBUI_PORT}:5055
+    restart: always
+
+  tautulli: # plex monitoring and statistics
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    networks:
+      - arrstack
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_FOLDER}/tautulli:/config
+    ports:
+      - ${TAUTULLI_WEBUI_PORT}:8181
+    restart: unless-stopped
+
+
+# uncomment below to enable qbittorrent with protonvpn for torrenting
+
+  # protonvpn: # vpn client for routing qbittorrent traffic
+  #   image: docker.io/qmcgaw/gluetun:latest
+  #   container_name: protonvpn
+  #   networks:
+  #     - arrstack
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - /dev/net/tun:/dev/net/tun
+  #   environment:
+  #     - TZ=${TZ}
+  #     - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER}
+  #     - VPN_TYPE=${VPN_TYPE}
+  #     - OPENVPN_USER=${OPENVPN_USER}
+  #     - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+  #     - VPN_PORT_FORWARDING=${VPN_PORT_FORWARDING}
+  #     - SERVER_COUNTRIES=${SERVER_COUNTRIES}
+  #     - PORT_FORWARD_ONLY=on
+  #     - VPN_PORT_FORWARDING_UP_COMMAND=${VPN_PORT_FORWARDING_UP_COMMAND}
+  #   volumes:
+  #     - ${APPDATA_FOLDER}/gluetun:/gluetun
+  #   ports:
+  #     - ${QBITTORRENT_WEBUI_PORT}:${QBITTORRENT_WEBUI_PORT}
+  #   restart: unless-stopped
+
+
+
+
+######## NETWORKS AND VOLUMES ########
+
+networks:
+  arrstack:
+    name: arrstack
+    driver: bridge
+
+
+

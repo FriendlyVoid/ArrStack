@@ -1,0 +1,154 @@
+================================================================================
+                              USENET STARTER GUIDE
+================================================================================
+
+Credit to Reddit user aeahmg for original post here:
+https://www.reddit.com/r/usenet/comments/18q7r0f/usenet_starter_guide/
+
+As someone who exclusively used torrents before, understanding how to get
+started with usenet felt like dark magic to me, so I'll try to summarize my
+knowledge so far here for anyone who might be just getting started and feeling
+as clueless as I was.
+
+Most of the details mentioned here, also exists on the wiki but I'll try to
+summarize the bits and pieces that I found useful to get me started as tldr as
+I can in case someone could find it useful in the future.
+
+--------------------------------------------------------------------------------
+                              WHAT IS USENET?
+--------------------------------------------------------------------------------
+
+Aside from the official wikipedia definition, usenet started as a distributed
+system for news articles, however it's currently used to distribute different
+types of binaries and media (movies, series, music, isos, ...etc)
+
+In order to get started downloading content through usenet, there are 3 main
+components you need to understand.
+
+--------------------------------------------------------------------------------
+                              USENET PROVIDER
+--------------------------------------------------------------------------------
+
+The easiest way to think of a usenet provider is that it's a some servers
+containing the different files (aka "articles", "messages", nzbs) you would
+want to download.
+
+There are a couple of factors affecting the choice(s) of selecting a provider:
+
+  * Block vs Subscription: Some providers offer a monthly/yearly based
+    subscription. Block accounts give you a limited quota (x GBs) that you can
+    use however you want, while subscription accounts give you a subscription
+    to access their services over time
+
+  * Quota: For subscription accounts, some providers (depending on the plan)
+    have limits on how much you can download per month (sometimes per year),
+    some are unlimited. For block accounts, you get what you pay for in terms
+    of how much you can download.
+
+  * Speed/Connections: Each provider (depending on the plan) has some limits
+    on the maximum download speed you can get from it and the maximum number
+    of concurrent connections to its servers. (some are unlimited)
+
+  * Server location: Some have servers in the US, some in the EU, some both
+    and probably different locations too, choosing one that is closest to you
+    makes it easier to achieve better speeds
+
+  * Retention: Each provider has different retention period of files, which is
+    how many days do they promise to keep the files for. They either promise
+    it in the format of N days (aka, anything older that this is deleted), or
+    N+ days (meaning that at least N days old files are kept but might have
+    some older files).
+
+  * Backbone: A lot of providers share the same backbone, as in they depend on
+    more or less the same servers to store their data. This is specially
+    important if you're planning to choose multiple providers.
+
+  * Price: Each provider offers their plans (block or subscription) through
+    different rates
+
+Considering those factors, you can check the list of providers and choose the
+best one for your use case.
+
+It is recommended to have one main provider (usually a subscription) and one
+or more fallback providers (usually a block account). In case the files you
+are trying to get are not 100% available on the main provider due to different
+reasons like DMCA Takedowns.
+
+--------------------------------------------------------------------------------
+                              USENET INDEXER
+--------------------------------------------------------------------------------
+
+Similar to torrent trackers, indexers allow you to search for the media that
+you're looking for and provide you with a `.nzb` file similar to a `.torrent`
+file that you can use to download the files you want from the provider.
+
+Different indexers offer different kinds of content, but in my use case so far
+(movies, series) having one paid indexer is more than enough for finding what
+you're looking for.
+
+There are some public (free) indexers and there are some private paid
+indexers. Some indexers have open signups (sign up and you're in), some only
+open during specific times or only by referral. Paid indexers offer different
+plans (monthly, yearly, lifetime)
+
+Based on the type of content you want, you can choose one of the indexers here
+to get started.
+
+--------------------------------------------------------------------------------
+                              NZB DOWNLOADER
+--------------------------------------------------------------------------------
+
+Similar to a torrent download client, you need an nzb downloader to actually
+download the files linked in the `.nzb` from the provider. Mainly SABNzbd and
+NZBGet (but afaik, development is no longer ongoing on this one)
+
+After setting up the client, you need to add the provider server to the
+download client settings in order for it to work.
+
+--------------------------------------------------------------------------------
+                     HOW TO SEARCH FOR CONTENT AND DOWNLOAD IT?
+--------------------------------------------------------------------------------
+
+MANUAL (not recommended):
+
+  1. Go to your indexer
+  2. Search for the content you wanna download
+  3. Download the `.nzb` file
+  4. Add the nzb file to the download client and it'll start downloading the
+     actual content you want
+
+This next part is not "required" to get it started with usenet but good to
+know if you want to have the full experience.
+
+--------------------------------------------------------------------------------
+                              AUTOMATION OPTIONS
+--------------------------------------------------------------------------------
+
+NZBHYDRA:
+
+NZBHydra basically automates the manual steps:
+  * Offers much more granular search options and allows you to aggregate
+    results from multiple indexers
+  * Automatically sends nzb files to the download client
+
+*ARR APPS:
+
+r/radarr (movies), r/sonarr (series), r/Lidarr (music), also automate the
+process with the addition of automating the search as well, you can tell them
+I want movie or series XYZ with this quality profile and they'll go ahead
+connect to the indexer(s), find the nzb and send it to the download client.
+In addition to some other extra nice features to easily manage your libraries.
+
+r/prowlarr is also a nice addition that allows you to sync indexer
+configurations across all arr apps.
+
+You can even go ahead and setup r/Ombi to manage user requests, but this is a
+bit off topic from this post. For the *arr apps, I recommend reading through
+TRaSH Guides for more details.
+
+--------------------------------------------------------------------------------
+
+PS: I haven't covered all the automated software here, only the ones I'm kinda
+familiar with, please check the wiki for more in depth look. Also I'm still
+new to the subject, so please feel free to correct me if you think some of the
+details here are not quite right.
