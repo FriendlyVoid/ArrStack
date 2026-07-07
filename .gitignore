@@ -1,0 +1,6 @@
+# Secrets — never commit real env files
+*.env
+.env
+.env.*
+# ...but DO commit the example template
+!.env.example
